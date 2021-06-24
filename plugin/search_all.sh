@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Arguments
-search_query="$(tr -d "\"\`\'^$" <<<"$1")"
+search_query="$(tr -d "\"\`\'^$" <<<"${1}")"
 
 # Colors
 black="$(tput setaf 0)"
@@ -12,30 +12,30 @@ blue="$(tput setaf 4)"
 reset="$(tput sgr0)"
 
 colorize_file_output() {
-	LC_ALL=C sed -E "s/^(.*)(:[0-9]+:[0-9]+)/$orange\1$black\2$reset/g"
+    LC_ALL=C sed -E "s/^(.*)(:[0-9]+:[0-9]+)/${orange}\1${black}\2${reset}/g"
 }
 
 colorize_output() {
-	LC_ALL=C sed -E "s|^(.*):([0-9]+):([0-9]+)(:)|$red\1$reset:$green\2$(tput sgr0):$reset\3\4 |g"
+    LC_ALL=C sed -E "s|^(.*):([0-9]+):([0-9]+)(:)|${red}\1${reset}:${green}\2$(tput sgr0):${reset}\3\4 |g"
 }
 
 callcommand() {
-	awk '!x[$0]++' <(
-		{ rg --files 2>/dev/null | rg --ignore-case "$search_query" 2>/dev/null; } &
-		{ git ls-files 2>/dev/null | rg --ignore-case "$search_query" 2>/dev/null; }
-	) | sed "s/$/:0:0:/g" | colorize_file_output
+    awk '!x[$0]++' <(
+        { rg --files 2>/dev/null | rg --ignore-case "${search_query}" 2>/dev/null; } &
+        { git ls-files 2>/dev/null | rg --ignore-case "${search_query}" 2>/dev/null; }
+    ) | sed "s/$/:0:0:/g" | colorize_file_output
 
-	rg \
-		-uu \
-		--color=never \
-		--column \
-		--ignore-case \
-		--line-number \
-		--max-columns=500 \
-		--no-heading \
-		--no-messages \
-		--with-filename \
-		"$search_query" 2>/dev/null | colorize_output
+    rg \
+        -uu \
+        --color=never \
+        --column \
+        --ignore-case \
+        --line-number \
+        --max-columns=500 \
+        --no-heading \
+        --no-messages \
+        --with-filename \
+        "${search_query}" 2>/dev/null | colorize_output
 }
 
 callcommand &
